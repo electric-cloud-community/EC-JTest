@@ -1,0 +1,756 @@
+# -*-Perl-*-
+
+# jtestSystemTests.ntest -
+#
+# ECJTest
+#
+# Copyright (c) 2005-2010 Electric Cloud, Inc.
+# All rights reserved
+
+use strict;
+use warnings;
+use ECTest;
+use ECSelenium;
+
+ 
+# system tests
+
+
+require "$::gTestFileDir/jtest-common.ntest";
+
+$::gProjectImported = 0;
+$::gtestProjectName = 'JTests';
+
+my $outcome = '';
+
+########################################################################
+# importProject - imports the test project and asserts that the specified
+#                 procedures exists
+#
+# Arguments:
+#   -none
+#
+# Returns:
+#   -nothing
+#
+########################################################################
+sub importProject() {
+    assertOK($::N->import(
+             { file =>"$::gTestFileDir/jtest.xml",
+               path  => "/projects/$::gtestProjectName",
+               force => 1
+             } ), 'import runCommandLine');
+   
+    assertOK($::N->getProcedure($::gtestProjectName, 'ctpFileTest'),'ctpFileTest procedure doesn\'t exist');
+    
+    assertOK($::N->getProcedure($::gtestProjectName, 'gtpFileTest'),'gtpFileTest procedure doesn\'t exist');
+    
+    assertOK($::N->getProcedure($::gtestProjectName, 'htmlReportFileType'),'htmlReportFileType procedure doesn\'t exist');
+    
+    assertOK($::N->getProcedure($::gtestProjectName, 'psReportFileType'),'psReportFileType procedure doesn\'t exist');
+    
+    assertOK($::N->getProcedure($::gtestProjectName, 'ptpFileTest'),'ptpFileTest procedure doesn\'t exist');
+    
+    assertOK($::N->getProcedure($::gtestProjectName, 'rtfReportFileType'),'rtfReportFileType procedure doesn\'t exist');
+    
+    assertOK($::N->getProcedure($::gtestProjectName, 'texReportFileType'),'texReportFileType procedure doesn\'t exist'); 
+    
+    assertOK($::N->getProcedure($::gtestProjectName, 'withRuleSDirectory'),'withRuleSDirectory procedure doesn\'t exist');  
+    
+    assertOK($::N->getProcedure($::gtestProjectName, 'withAdditonalOptions'),'wtihAdditonalOptions procedure doesn\'t exist');
+    
+    assertOK($::N->getProcedure($::gtestProjectName, 'xmlReportFileType'),'xmlReportFileType procedure doesn\'t exist'); 
+    
+    $::gProjectImported = 1;
+}
+
+########################################################################
+# doSetup - invokes the project import method in case it hasn't been 
+#           executed
+#
+# Arguments:
+#   -none
+#
+# Returns:
+#   -nothing
+#
+########################################################################
+sub doSetup() {
+
+    if(! $::gProjectImported) {
+        importProject();
+    }
+    
+    
+};
+#ctpFileTest
+ntest "ctpFileTest", {}, sub {
+      
+      doSetup();
+      
+      # run test job
+     
+      my $xpath = $::N->runProcedure($::gtestProjectName, 
+              {procedureName => "ctpFileTest",
+              pollInterval  => '1',
+              timeout => 600,
+                   actualParameter => [
+                  
+                  ]
+      });
+          
+       
+      # make sure it finished
+      my $jobId = 0;
+      my $status = '';
+      
+      assertOK($xpath, 'runProcedure has errors');
+      if ($xpath) {
+          $jobId  = $xpath->findvalue("//jobId");
+          $status = $xpath->findvalue("//status");
+          $outcome = $xpath->findvalue("//outcome");
+          
+
+          
+          assertTrue($jobId && $jobId ne "",'valid job id');
+          assertEq('completed',$status,"job $jobId complete");
+  
+          #abort if job did not finish
+          if ($status ne 'completed') {
+              assertOK($::N->abortJob($jobId, {force => 1}));
+          }
+      }
+
+      # get the job details
+      $xpath = $::N->getJobDetails($jobId);
+   
+      # get the value of the commands lines
+      my $commandLine = $xpath->findvalue("//property[propertyName='commandLine']/value");
+      my $workingDir = $xpath->findvalue("//property[propertyName='workingDir']/value");
+
+      assertEq($commandLine, 'jtestgui -nogui -nologo -ctp jtestFile.ctp','command line doesn\'t match expected output');
+           
+      assertEq($workingDir, 'c:\jtest');
+
+  };
+
+#gtpFileTest
+ntest "gtpFileTest", {}, sub {
+      
+      doSetup();
+      
+      # run test job
+     
+      my $xpath = $::N->runProcedure($::gtestProjectName, 
+              {procedureName => "gtpFileTest",
+              pollInterval  => '1',
+              timeout => 600,
+                   actualParameter => [
+                  
+                  ]
+      });
+          
+       
+      # make sure it finished
+      my $jobId = 0;
+      my $status = '';
+      
+      assertOK($xpath, 'runProcedure has errors');
+      if ($xpath) {
+          $jobId  = $xpath->findvalue("//jobId");
+          $status = $xpath->findvalue("//status");
+          $outcome = $xpath->findvalue("//outcome");
+          
+          assertTrue($jobId && $jobId ne "",'valid job id');
+          assertEq('completed',$status,"job $jobId complete");
+  
+          #abort if job did not finish
+          if ($status ne 'completed') {
+              assertOK($::N->abortJob($jobId, {force => 1}));
+          }
+      }
+
+      # get the job details
+      $xpath = $::N->getJobDetails($jobId);
+   
+      # get the value of the commands lines
+      my $commandLine = $xpath->findvalue("//property[propertyName='commandLine']/value");
+      my $workingDir = $xpath->findvalue("//property[propertyName='workingDir']/value");
+
+      assertEq($commandLine, 'jtestgui -nogui -nologo -gtp jtestfile.gtp');
+           
+      assertEq($workingDir, 'c:\jtest');
+  };
+  
+#htmlReportFileType
+  
+  ntest "htmlReportFileType", {}, sub {
+      
+      doSetup();
+      
+      # run test job
+     
+      my $xpath = $::N->runProcedure($::gtestProjectName, 
+              {procedureName => "htmlReportFileType",
+              pollInterval  => '1',
+              timeout => 600,
+                   actualParameter => [
+                  
+                  ]
+      });
+          
+       
+      # make sure it finished
+      my $jobId = 0;
+      my $status = '';
+      
+      assertOK($xpath, 'runProcedure has errors');
+      if ($xpath) {
+          $jobId  = $xpath->findvalue("//jobId");
+          $status = $xpath->findvalue("//status");
+          $outcome = $xpath->findvalue("//outcome");
+          
+          assertTrue($jobId && $jobId ne "",'valid job id');
+          assertEq('completed',$status,"job $jobId complete");
+  
+          #abort if job did not finish
+          if ($status ne 'completed') {
+              assertOK($::N->abortJob($jobId, {force => 1}));
+          }
+      }
+
+      # get the job details
+      $xpath = $::N->getJobDetails($jobId);
+   
+      # get the value of the commands lines
+      my $commandLine = $xpath->findvalue("//property[propertyName='commandLine']/value");
+      my $workingDir = $xpath->findvalue("//property[propertyName='workingDir']/value");
+
+      assertEq($commandLine, 'jtestgui -nogui -nologo -gtp fileTest.gtp -report_html jtestReport.html');
+           
+      assertEq($workingDir, 'c:\jtest');
+  };
+
+#psReportFileType
+
+ ntest "psReportFileType", {}, sub {
+      
+      doSetup();
+      
+      # run test job
+     
+      my $xpath = $::N->runProcedure($::gtestProjectName, 
+              {procedureName => "psReportFileType",
+              pollInterval  => '1',
+              timeout => 600,
+                   actualParameter => [
+                  
+                  ]
+      });
+          
+       
+      # make sure it finished
+      my $jobId = 0;
+      my $status = '';
+      
+      assertOK($xpath, 'runProcedure has errors');
+      if ($xpath) {
+          $jobId  = $xpath->findvalue("//jobId");
+          $status = $xpath->findvalue("//status");
+          $outcome = $xpath->findvalue("//outcome");
+          
+          assertTrue($jobId && $jobId ne "",'valid job id');
+          assertEq('completed',$status,"job $jobId complete");
+  
+          #abort if job did not finish
+          if ($status ne 'completed') {
+              assertOK($::N->abortJob($jobId, {force => 1}));
+          }
+      }
+
+      # get the job details
+      $xpath = $::N->getJobDetails($jobId);
+   
+      # get the value of the commands lines
+      my $commandLine = $xpath->findvalue("//property[propertyName='commandLine']/value");
+      my $workingDir = $xpath->findvalue("//property[propertyName='workingDir']/value");
+
+      assertEq($commandLine, 'jtestgui -nogui -nologo -gtp jtestFile.gtp -report_ascii jtestReportFile.ps');
+           
+      assertEq($workingDir, 'c:\jtest');
+  }; 
+  
+  
+#ptpFileTest
+  ntest "ptpFileTest", {}, sub {
+      
+      doSetup();
+      
+      # run test job
+     
+      my $xpath = $::N->runProcedure($::gtestProjectName, 
+              {procedureName => "ptpFileTest",
+              pollInterval  => '1',
+              timeout => 600,
+                   actualParameter => [
+                  
+                  ]
+      });
+          
+       
+      # make sure it finished
+      my $jobId = 0;
+      my $status = '';
+      
+      assertOK($xpath, 'runProcedure has errors');
+      if ($xpath) {
+          $jobId  = $xpath->findvalue("//jobId");
+          $status = $xpath->findvalue("//status");
+          $outcome = $xpath->findvalue("//outcome");
+          
+          assertTrue($jobId && $jobId ne "",'valid job id');
+          assertEq('completed',$status,"job $jobId complete");
+  
+          #abort if job did not finish
+          if ($status ne 'completed') {
+              assertOK($::N->abortJob($jobId, {force => 1}));
+          }
+      }
+
+      # get the job details
+      $xpath = $::N->getJobDetails($jobId);
+   
+      # get the value of the commands lines
+      my $commandLine = $xpath->findvalue("//property[propertyName='commandLine']/value");
+      my $workingDir = $xpath->findvalue("//property[propertyName='workingDir']/value");
+
+      assertEq($commandLine, 'jtestgui -nogui -nologo -ptp jtestFile.ptp');
+           
+      assertEq($workingDir, 'C:\jtest');
+  }; 
+  
+    
+
+    
+#rtfReportFileType
+    ntest "rtfReportFileType", {}, sub {
+      
+      doSetup();
+      
+      # run test job
+     
+      my $xpath = $::N->runProcedure($::gtestProjectName, 
+              {procedureName => "rtfReportFileType",
+              pollInterval  => '1',
+              timeout => 600,
+                   actualParameter => [
+                  
+                  ]
+      });
+          
+       
+      # make sure it finished
+      my $jobId = 0;
+      my $status = '';
+      
+      assertOK($xpath, 'runProcedure has errors');
+      if ($xpath) {
+          $jobId  = $xpath->findvalue("//jobId");
+          $status = $xpath->findvalue("//status");
+          $outcome = $xpath->findvalue("//outcome");
+          
+          assertTrue($jobId && $jobId ne "",'valid job id');
+          assertEq('completed',$status,"job $jobId complete");
+  
+          #abort if job did not finish
+          if ($status ne 'completed') {
+              assertOK($::N->abortJob($jobId, {force => 1}));
+          }
+      }
+
+      # get the job details
+      $xpath = $::N->getJobDetails($jobId);
+   
+      # get the value of the commands lines
+      my $commandLine = $xpath->findvalue("//property[propertyName='commandLine']/value");
+      my $workingDir = $xpath->findvalue("//property[propertyName='workingDir']/value");
+
+      assertEq($commandLine, 'jtestgui -nogui -nologo -gtp jtestFile.gtp -report_ascii reportFile.rtf');
+           
+      assertEq($workingDir, 'c:\jtest');
+  }; 
+  
+#rtfReportFileType
+      ntest "rtfReportFileType", {}, sub {
+      
+      doSetup();
+      
+      # run test job
+     
+      my $xpath = $::N->runProcedure($::gtestProjectName, 
+              {procedureName => "rtfReportFileType",
+              pollInterval  => '1',
+              timeout => 600,
+                   actualParameter => [
+                  
+                  ]
+      });
+          
+       
+      # make sure it finished
+      my $jobId = 0;
+      my $status = '';
+      
+      assertOK($xpath, 'runProcedure has errors');
+      if ($xpath) {
+          $jobId  = $xpath->findvalue("//jobId");
+          $status = $xpath->findvalue("//status");
+          $outcome = $xpath->findvalue("//outcome");
+          
+         assertTrue($jobId && $jobId ne "",'valid job id');
+          assertEq('completed',$status,"job $jobId complete");
+  
+          #abort if job did not finish
+          if ($status ne 'completed') {
+              assertOK($::N->abortJob($jobId, {force => 1}));
+          }
+      }
+
+      # get the job details
+      $xpath = $::N->getJobDetails($jobId);
+   
+      # get the value of the commands lines
+      my $commandLine = $xpath->findvalue("//property[propertyName='commandLine']/value");
+      my $workingDir = $xpath->findvalue("//property[propertyName='workingDir']/value");
+
+      assertEq($commandLine, 'jtestgui -nogui -nologo -gtp jtestFile.gtp -report_ascii reportFile.rtf');
+           
+      assertEq($workingDir, 'c:\jtest');
+  }; 
+  
+      
+#texReportFileType
+    ntest "texReportFileType", {}, sub {
+      
+      doSetup();
+      
+      # run test job
+     
+      my $xpath = $::N->runProcedure($::gtestProjectName, 
+              {procedureName => "texReportFileType",
+              pollInterval  => '1',
+              timeout => 600,
+                   actualParameter => [
+                  
+                  ]
+      });
+          
+       
+      # make sure it finished
+      my $jobId = 0;
+      my $status = '';
+      
+      assertOK($xpath, 'runProcedure has errors');
+      if ($xpath) {
+          $jobId  = $xpath->findvalue("//jobId");
+          $status = $xpath->findvalue("//status");
+          $outcome = $xpath->findvalue("//outcome");
+
+          assertTrue($jobId && $jobId ne "",'valid job id');
+          assertEq('completed',$status,"job $jobId complete");
+  
+          #abort if job did not finish
+          if ($status ne 'completed') {
+              assertOK($::N->abortJob($jobId, {force => 1}));
+          }
+      }
+
+      # get the job details
+      $xpath = $::N->getJobDetails($jobId);
+   
+      # get the value of the commands lines
+      my $commandLine = $xpath->findvalue("//property[propertyName='commandLine']/value");
+      my $workingDir = $xpath->findvalue("//property[propertyName='workingDir']/value");
+
+      assertEq($commandLine, 'jtestgui -nogui -nologo -gtp jtestFile.gtp -report_ascii jtestReportFile.tex');
+           
+      assertEq($workingDir, 'c:\jtest');
+  }; 
+#rtfReportFileType
+ ntest "rtfReportFileType", {}, sub {
+      
+      doSetup();
+      
+      # run test job
+     
+      my $xpath = $::N->runProcedure($::gtestProjectName, 
+              {procedureName => "rtfReportFileType",
+              pollInterval  => '1',
+              timeout => 600,
+                   actualParameter => [] });
+          
+   # make sure it finished
+      my $jobId = 0;
+      my $status = '';
+      
+      assertOK($xpath, 'runProcedure has errors');
+      if ($xpath) {
+          $jobId  = $xpath->findvalue("//jobId");
+          $status = $xpath->findvalue("//status");
+          $outcome = $xpath->findvalue("//outcome");
+          
+          assertTrue($jobId && $jobId ne "",'valid job id');
+          assertEq('completed',$status,"job $jobId complete");
+  
+          #abort if job did not finish
+          if ($status ne 'completed') {
+              assertOK($::N->abortJob($jobId, {force => 1}));
+          }
+      }
+
+      # get the job details
+      $xpath = $::N->getJobDetails($jobId);
+   
+      # get the value of the commands lines
+      my $commandLine = $xpath->findvalue("//property[propertyName='commandLine']/value");
+      my $workingDir = $xpath->findvalue("//property[propertyName='workingDir']/value");
+
+      assertEq($commandLine, 'jtestgui -nogui -nologo -gtp jtestFile.gtp -report_ascii reportFile.rtf');
+           
+      assertEq($workingDir, 'c:\jtest');
+  }; 
+  
+  #txtReportFileType
+    ntest "txtReportFileType", {}, sub {
+      
+      doSetup();
+      
+      # run test job
+     
+      my $xpath = $::N->runProcedure($::gtestProjectName, 
+              {procedureName => "txtReportFileType",
+              pollInterval  => '1',
+              timeout => 600,
+                   actualParameter => [
+                  
+                  ]
+      });
+          
+       
+      # make sure it finished
+      my $jobId = 0;
+      my $status = '';
+      
+      assertOK($xpath, 'runProcedure has errors');
+      if ($xpath) {
+          $jobId  = $xpath->findvalue("//jobId");
+          $status = $xpath->findvalue("//status");
+          $outcome = $xpath->findvalue("//outcome");
+          
+          assertTrue($jobId && $jobId ne "",'valid job id');
+          assertEq('completed',$status,"job $jobId complete");
+  
+          #abort if job did not finish
+          if ($status ne 'completed') {
+              assertOK($::N->abortJob($jobId, {force => 1}));
+          }
+      }
+
+      # get the job details
+      $xpath = $::N->getJobDetails($jobId);
+   
+      # get the value of the commands lines
+      my $commandLine = $xpath->findvalue("//property[propertyName='commandLine']/value");
+      my $workingDir = $xpath->findvalue("//property[propertyName='workingDir']/value");
+
+      assertEq($commandLine, 'jtestgui -nogui -nologo -gtp jtestFile.gtp -report_ascii jtestReportFile.txt');
+           
+      assertEq($workingDir, 'c:\jtest');
+  }; 
+  
+ #rtfReportFileType 
+ ntest "rtfReportFileType", {}, sub {
+      
+      doSetup();
+      
+      # run test job
+     
+      my $xpath = $::N->runProcedure($::gtestProjectName, 
+              {procedureName => "rtfReportFileType",
+              pollInterval  => '1',
+              timeout => 600,
+                   actualParameter => [] });
+          
+   # make sure it finished
+      my $jobId = 0;
+      my $status = '';
+      
+      assertOK($xpath, 'runProcedure has errors');
+      if ($xpath) {
+          $jobId  = $xpath->findvalue("//jobId");
+          $status = $xpath->findvalue("//status");
+          $outcome = $xpath->findvalue("//outcome");
+          
+          assertTrue($jobId && $jobId ne "",'valid job id');
+          assertEq('completed',$status,"job $jobId complete");
+  
+          #abort if job did not finish
+          if ($status ne 'completed') {
+              assertOK($::N->abortJob($jobId, {force => 1}));
+          }
+      }
+
+      # get the job details
+      $xpath = $::N->getJobDetails($jobId);
+   
+      # get the value of the commands lines
+      my $commandLine = $xpath->findvalue("//property[propertyName='commandLine']/value");
+      my $workingDir = $xpath->findvalue("//property[propertyName='workingDir']/value");
+
+      assertEq($commandLine, 'jtestgui -nogui -nologo -gtp jtestFile.gtp -report_ascii reportFile.rtf');
+           
+      assertEq($workingDir, 'c:\jtest');
+  };
+  
+#withRuleSDirectory
+    ntest "withRuleSDirectory", {}, sub {
+      
+      doSetup();
+      
+      # run test job
+     
+      my $xpath = $::N->runProcedure($::gtestProjectName, 
+              {procedureName => "withRuleSDirectory",
+              pollInterval  => '1',
+              timeout => 600,
+                   actualParameter => [
+                  
+                  ]
+      });
+          
+       
+      # make sure it finished
+      my $jobId = 0;
+      my $status = '';
+      
+      assertOK($xpath, 'runProcedure has errors');
+      if ($xpath) {
+          $jobId  = $xpath->findvalue("//jobId");
+          $status = $xpath->findvalue("//status");
+          $outcome = $xpath->findvalue("//outcome");
+          
+          assertTrue($jobId && $jobId ne "",'valid job id');
+          assertEq('completed',$status,"job $jobId complete");
+  
+          #abort if job did not finish
+          if ($status ne 'completed') {
+              assertOK($::N->abortJob($jobId, {force => 1}));
+          }
+      }
+
+      # get the job details
+      $xpath = $::N->getJobDetails($jobId);
+   
+      # get the value of the commands lines
+      my $commandLine = $xpath->findvalue("//property[propertyName='commandLine']/value");
+      my $workingDir = $xpath->findvalue("//property[propertyName='workingDir']/value");
+
+      assertEq($commandLine, 'jtestgui -nogui -nologo -gtp jtestFile.gtp -report_xml reportFile.xml -rulesdir C:\jtest\rules');
+           
+      assertEq($workingDir, 'c:\jtest');
+  }; 
+
+  #wtihAdditonalOptions
+    ntest "withAdditonalOptions", {}, sub {
+      
+      doSetup();
+      
+      # run test job
+     
+      my $xpath = $::N->runProcedure($::gtestProjectName, 
+              {procedureName => "withAdditonalOptions",
+              pollInterval  => '1',
+              timeout => 600,
+                   actualParameter => [
+                  
+                  ]
+      });
+          
+       
+      # make sure it finished
+      my $jobId = 0;
+      my $status = '';
+      
+      assertOK($xpath, 'runProcedure has errors');
+      if ($xpath) {
+          $jobId  = $xpath->findvalue("//jobId");
+          $status = $xpath->findvalue("//status");
+          $outcome = $xpath->findvalue("//outcome");
+          
+          assertTrue($jobId && $jobId ne "",'valid job id');
+          assertEq('completed',$status,"job $jobId complete");
+  
+          #abort if job did not finish
+          if ($status ne 'completed') {
+              assertOK($::N->abortJob($jobId, {force => 1}));
+          }
+      }
+
+      # get the job details
+      $xpath = $::N->getJobDetails($jobId);
+   
+      # get the value of the commands lines
+      my $commandLine = $xpath->findvalue("//property[propertyName='commandLine']/value");
+      my $workingDir = $xpath->findvalue("//property[propertyName='workingDir']/value");
+
+      assertEq($commandLine, 'jtestgui -nogui -nologo -gtp jtestfile.gtp -detail_report_ascii filename.txt');
+           
+      assertEq($workingDir, 'c:\jtest');
+  }; 
+  
+  #xmlReportFileType
+  
+      ntest "xmlReportFileType", {}, sub {
+      
+      doSetup();
+      
+      # run test job
+     
+      my $xpath = $::N->runProcedure($::gtestProjectName, 
+              {procedureName => "xmlReportFileType",
+              pollInterval  => '1',
+              timeout => 600,
+                   actualParameter => [] });
+          
+   # make sure it finished
+      my $jobId = 0;
+      my $status = '';
+      
+      assertOK($xpath, 'runProcedure has errors');
+      if ($xpath) {
+          $jobId  = $xpath->findvalue("//jobId");
+          $status = $xpath->findvalue("//status");
+          $outcome = $xpath->findvalue("//outcome");
+          
+          
+          assertTrue($jobId && $jobId ne "",'valid job id');
+          assertEq('completed',$status,"job $jobId complete");
+  
+          #abort if job did not finish
+          if ($status ne 'completed') {
+              assertOK($::N->abortJob($jobId, {force => 1}));
+          }
+      }
+
+      # get the job details
+      $xpath = $::N->getJobDetails($jobId);
+   
+      # get the value of the commands lines
+      my $commandLine = $xpath->findvalue("//property[propertyName='commandLine']/value");
+      my $workingDir = $xpath->findvalue("//property[propertyName='workingDir']/value");
+
+      assertEq($commandLine, 'jtestgui -nogui -nologo -gtp jtestFile.gtp -report_xml jtestReportFile.xml');
+           
+      assertEq($workingDir, 'c:\jtest');
+  };
+  

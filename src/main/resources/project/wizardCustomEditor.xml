@@ -1,0 +1,48 @@
+<editor>
+	<help>/commander/pages/@PLUGIN_NAME@/@PLUGIN_KEY@_help?s=Administration&amp;ss=Plugins#runJtest</help> 	  
+	<formElement>
+		<type>entry</type>
+		<label>Working Directory</label>
+		<property>directory</property>
+		<required>1</required>
+		<documentation>Indicate the directory where the jtest file resides. (Required)</documentation>
+	</formElement> 
+	<formElement>
+		<type>select</type>
+		<label>Jtest File Type:</label>
+		<property>jtestFileType</property>
+		<required>0</required>
+		<documentation>Select the extension of the jtest file that will be executed: gtp, ctp, or ptp.</documentation>
+		<option><name>ptp</name><value>ptp</value></option>
+		<option><name>ctp</name><value>ctp</value></option>
+		<option><name>gtp</name><value>gtp</value></option>
+	</formElement>
+	<formElement>
+		<type>entry</type>
+		<label>Jtest File</label>
+		<property>jtestFileName</property>
+		<required>1</required>
+		<documentation>Provide the name of the jtest file to be executed. (Required)</documentation>
+	</formElement> 
+	<formElement>
+		<type>entry</type>
+		<label>Report File</label>
+		<property>reportFile</property>
+		<required>0</required>
+		<documentation>Provide the path of the report in a specified file type xml, ascii or html.</documentation>
+	</formElement>
+	<formElement>
+		<type>entry</type>
+		<label>Rules Directory</label>
+		<property>rulesDirectory</property>
+		<required>0</required>
+		<documentation>Indicate the directory to use as the RuleWizard rules directory.</documentation>
+	 </formElement>
+	<formElement>
+		<type>entry</type>
+		<label>Additional Options</label>
+		<property>additionalOptions</property>
+		<required>0</required>
+		<documentation>Provide any additional options for the jtest command.</documentation>
+	</formElement>
+</editor>

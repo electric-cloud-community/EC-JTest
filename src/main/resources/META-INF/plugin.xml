@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<plugin>
+    <key>@PLUGIN_KEY@</key>
+    <version>@PLUGIN_VERSION@</version>
+    <label>@PLUGIN_KEY@</label>
+    <description>Integrates Jtest test framework into ElectricFlow</description>
+    <category>Test</category>
+    <author>Electric Cloud</author>
+    <authorUrl>http://www.electric-cloud.com/support</authorUrl>
+    <help>EC-JTest_help.xml</help>
+    <commander-version min="3.6"/>
+    <components>
+        <component name="configure">
+            <javascript>war/com.electriccloud.commander.plugins.EC_Jtest.Configure/com.electriccloud.commander.plugins.EC_Jtest.Configure.nocache.js</javascript>        	
+        </component>
+    </components>
+</plugin>
