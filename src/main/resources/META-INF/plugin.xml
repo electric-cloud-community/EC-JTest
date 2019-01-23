@@ -5,6 +5,7 @@
     <label>@PLUGIN_KEY@</label>
     <description>Integrates Jtest test framework into ElectricFlow</description>
     <category>Test</category>
+    <ecSupportLevel>20</ecSupportLevel>
     <author>Electric Cloud</author>
     <authorUrl>http://www.electric-cloud.com/support</authorUrl>
     <help>EC-JTest_help.xml</help>
